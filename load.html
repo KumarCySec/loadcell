@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Load Cell Data</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://bootswatch.com/4/lux/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Pusher JS -->
+  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      color: #343a40;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      color: #007bff;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .card {
+      margin: 20px auto;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card-title {
+      font-size: 1.75em;
+      color: #007bff;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+    .card-text {
+      font-size: 2.5em;
+      color: #28a745;
+      font-weight: 600;
+    }
+    .progress {
+      height: 35px;
+      background-color: #e9ecef;
+      border-radius: 17.5px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .progress-bar {
+      font-size: 1.25em;
+      line-height: 35px;
+      border-radius: 17.5px;
+      transition: width 0.6s ease;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 1em;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Load Cell Data</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg">
+        <div class="card-body">
+          <h5 class="card-title text-center">Current Load</h5>
+          <p class="card-text text-center" id="loadcellData">Loading...</p>
+          <div class="progress">
+            <div id="loadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; Kishore Kumar</p>
+</footer>
+
+<script>
+  // Enable Pusher logging - don't include this in production
+  Pusher.logToConsole = true;
+
+  // Initialize Pusher
+  var pusher = new Pusher('YOUR_APP_KEY', { // Replace with your Pusher App Key
+    cluster: 'YOUR_APP_CLUSTER' // Replace with your Pusher App Cluster
+  });
+
+  // Subscribe to the channel
+  var channel = pusher.subscribe('loadcell-channel');
+
+  // Bind to the event
+  channel.bind('loadcell-event', function(data) {
+    // Update load cell data
+    var loadValue = data.load;
+    document.getElementById('loadcellData').innerText = loadValue;
+
+    // Update the progress bar
+    var loadPercentage = (loadValue / 100) * 100; // Assuming 100 is the max value
+    var progressBar = document.getElementById('loadProgressBar');
+    progressBar.style.width = loadPercentage + '%';
+    progressBar.setAttribute('aria-valuenow', loadPercentage);
+    progressBar.innerText = loadPercentage.toFixed(2) + '%';
+  });
+</script>
+
+</body>
+</html>
